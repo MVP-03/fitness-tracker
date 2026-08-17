@@ -10,7 +10,9 @@ export default function Settings() {
   const [saved, setSaved] = useState(false)
   const { session } = useAuth()
   const [signingOut, setSigningOut] = useState(false)
-  const [profileName, setProfileName] = useState('')
+  const [profile, setProfile] = useState(null)
+  const [nameInput, setNameInput] = useState('')
+  const [nameSaved, setNameSaved] = useState(false)
 
   async function signOut() {
     setSigningOut(true)
@@ -28,7 +30,11 @@ export default function Settings() {
   useEffect(() => {
     (async () => {
       const stored = await api.settings.get('profile')
-      if (stored) setProfileName(JSON.parse(stored).name || '')
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        setProfile(parsed)
+        setNameInput(parsed.name || '')
+      }
     })()
   }, [])
 
@@ -39,11 +45,22 @@ export default function Settings() {
     setTimeout(() => setSaved(false), 2000)
   }
 
+  async function saveName(ev) {
+    ev.preventDefault()
+    const trimmed = nameInput.trim()
+    if (!trimmed || !profile) return
+    const next = { ...profile, name: trimmed }
+    await api.settings.set('profile', JSON.stringify(next))
+    setProfile(next)
+    setNameSaved(true)
+    setTimeout(() => setNameSaved(false), 2000)
+  }
+
   return (
     <div className="page">
       <div className="section-header"><h3>Settings</h3></div>
 
-      {isElectron ? (
+      {isElectron && (
         <div className="settings-block">
           <h4>Groq API key</h4>
           <p className="hint">
@@ -61,30 +78,29 @@ export default function Settings() {
             <button type="submit">{saved ? 'Saved ✓' : 'Save key'}</button>
           </form>
         </div>
-      ) : (
-        <div className="settings-block">
-          <h4>Groq API key</h4>
-          <p className="hint">
-            "Estimate with AI" on the Food tab is powered by a shared server key
-            on the web version — nothing to configure here.
-          </p>
-        </div>
       )}
 
-      <div className="settings-block">
-        <h4>Shared cloud database</h4>
-        <p className="hint">
-          {isCloudConfigured
-            ? 'Connected — food, weight and workout data sync to Supabase and each person signs in separately.'
-            : 'Not connected yet. Once a Supabase project is ready, its URL and anon key go here so this app can log in each person separately and sync their food, weight and workout data to one shared backend.'}
-        </p>
-      </div>
+      {profile && (
+        <div className="settings-block">
+          <h4>Display name</h4>
+          <p className="hint">The name shown on your profile chip and in the app.</p>
+          <form className="settings-form" onSubmit={saveName}>
+            <input
+              type="text"
+              placeholder="Your name"
+              value={nameInput}
+              onChange={e => setNameInput(e.target.value)}
+            />
+            <button type="submit">{nameSaved ? 'Saved ✓' : 'Save name'}</button>
+          </form>
+        </div>
+      )}
 
       {isCloudConfigured && session && (
         <div className="settings-block">
           <h4>Account</h4>
           <p className="hint">
-            Signed in as {profileName ? `${profileName} (${session.user.email})` : session.user.email}.
+            Signed in as {profile?.name ? `${profile.name} (${session.user.email})` : session.user.email}.
           </p>
           <button className="danger-btn" onClick={signOut} disabled={signingOut}>
             {signingOut ? 'Signing out…' : 'Log out'}
