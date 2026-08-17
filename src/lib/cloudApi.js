@@ -147,8 +147,8 @@ export const cloudApi = {
       if (key === 'goals') return row.goals ? JSON.stringify(row.goals) : null
       if (key === 'profile') {
         if (!row.onboarded) return null
-        const { sex, date_of_birth, height_cm, current_weight_kg, target_weight_kg, activity_level, weekly_rate_kg } = row
-        return JSON.stringify({ sex, date_of_birth, height_cm, current_weight_kg, target_weight_kg, activity_level, weekly_rate_kg })
+        const { name, sex, date_of_birth, height_cm, current_weight_kg, target_weight_kg, activity_level, weekly_rate_kg } = row
+        return JSON.stringify({ name, sex, date_of_birth, height_cm, current_weight_kg, target_weight_kg, activity_level, weekly_rate_kg })
       }
       return null
     },

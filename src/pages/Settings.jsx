@@ -13,6 +13,7 @@ export default function Settings() {
   const [profile, setProfile] = useState(null)
   const [nameInput, setNameInput] = useState('')
   const [nameSaved, setNameSaved] = useState(false)
+  const [nameError, setNameError] = useState('')
 
   async function signOut() {
     setSigningOut(true)
@@ -49,11 +50,16 @@ export default function Settings() {
     ev.preventDefault()
     const trimmed = nameInput.trim()
     if (!trimmed || !profile) return
+    setNameError('')
     const next = { ...profile, name: trimmed }
-    await api.settings.set('profile', JSON.stringify(next))
-    setProfile(next)
-    setNameSaved(true)
-    setTimeout(() => setNameSaved(false), 2000)
+    try {
+      await api.settings.set('profile', JSON.stringify(next))
+      setProfile(next)
+      setNameSaved(true)
+      setTimeout(() => setNameSaved(false), 2000)
+    } catch (err) {
+      setNameError(err.message || 'Could not save name')
+    }
   }
 
   return (
@@ -93,6 +99,7 @@ export default function Settings() {
             />
             <button type="submit">{nameSaved ? 'Saved ✓' : 'Save name'}</button>
           </form>
+          {nameError && <div className="form-error">{nameError}</div>}
         </div>
       )}
 

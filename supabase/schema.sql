@@ -74,6 +74,7 @@ create table if not exists public.water_entries (
 
 create table if not exists public.profiles (
   user_id uuid primary key references auth.users(id) on delete cascade,
+  name text,
   sex text,
   date_of_birth date,
   height_cm numeric,
@@ -85,9 +86,10 @@ create table if not exists public.profiles (
   onboarded boolean not null default false
 );
 
--- Migrate installs created before date_of_birth/onboarded existed.
+-- Migrate installs created before date_of_birth/onboarded/name existed.
 alter table public.profiles add column if not exists date_of_birth date;
 alter table public.profiles add column if not exists onboarded boolean not null default false;
+alter table public.profiles add column if not exists name text;
 alter table public.profiles drop column if exists age;
 
 alter table public.foods enable row level security;
