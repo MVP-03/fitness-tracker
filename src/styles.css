@@ -486,6 +486,7 @@ button[type='submit']:active, .add-btn:active { transform: scale(0.97); box-shad
 /* ---------------------------------------------------------------- hint / errors */
 
 .hint { color: var(--text-dim); font-size: 12.5px; line-height: 1.55; margin: -8px 0 0; }
+.hint.error-hint { color: var(--accent-deep); }
 .form-error {
   width: 100%;
   color: var(--accent-deep);

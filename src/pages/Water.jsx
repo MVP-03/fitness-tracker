@@ -10,9 +10,15 @@ export default function Water({ date, setDate }) {
   const [entries, setEntries] = useState([])
   const [goal, setGoal] = useState(2500)
   const [custom, setCustom] = useState('')
+  const [error, setError] = useState('')
 
   async function refresh() {
-    setEntries(await api.water.list(date))
+    try {
+      setEntries(await api.water.list(date))
+      setError('')
+    } catch (err) {
+      setError(err?.message || 'Failed to load water log.')
+    }
   }
 
   useEffect(() => { refresh() }, [date])
@@ -34,8 +40,13 @@ export default function Water({ date, setDate }) {
   const pct = goal > 0 ? Math.min(total / goal, 1) : 0
 
   async function addAmount(amount_ml) {
-    await api.water.add({ date, amount_ml })
-    refresh()
+    try {
+      await api.water.add({ date, amount_ml })
+      setError('')
+      refresh()
+    } catch (err) {
+      setError(err?.message || 'Failed to add water entry.')
+    }
   }
 
   async function submitCustom(ev) {
@@ -47,8 +58,13 @@ export default function Water({ date, setDate }) {
   }
 
   async function remove(id) {
-    await api.water.delete(id)
-    refresh()
+    try {
+      await api.water.delete(id)
+      setError('')
+      refresh()
+    } catch (err) {
+      setError(err?.message || 'Failed to remove water entry.')
+    }
   }
 
   return (
@@ -86,6 +102,8 @@ export default function Water({ date, setDate }) {
           <button type="submit">Add</button>
         </form>
       </div>
+
+      {error && <p className="hint error-hint">{error}</p>}
 
       <div className="section-header"><h3>Today's log</h3></div>
       {entries.length === 0 ? (
