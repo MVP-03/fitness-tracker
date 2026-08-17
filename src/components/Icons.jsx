@@ -50,7 +50,7 @@ export function Sparkle(props) {
 
 export function CaretDown(props) {
   return (
-    <svg {...base} width={props.size ?? 14} height={props.size ?? 14} aria-hidden="true">
+    <svg {...base} width={props.size ?? 14} height={props.size ?? 14} style={props.style} aria-hidden="true">
       <path d="M6 9l6 6 6-6" />
     </svg>
   )

@@ -86,9 +86,11 @@ export default function Dashboard({ date, setDate }) {
                 <div className="entry-name">{e.food_name}</div>
                 <div className="entry-meta">{e.meal_type} · x{e.quantity}</div>
               </div>
-              <div className="entry-macros">
-                <span>{Math.round(e.calories)} kcal</span>
-                <span>{Math.round(e.protein)}p / {Math.round(e.carbs)}c / {Math.round(e.fat)}f</span>
+              <div className="macro-pills entry-macro-pills">
+                <span className="macro-pill calories">{Math.round(e.calories)} kcal</span>
+                <span className="macro-pill protein">{Math.round(e.protein)}g protein</span>
+                <span className="macro-pill carbs">{Math.round(e.carbs)}g carbs</span>
+                <span className="macro-pill fat">{Math.round(e.fat)}g fat</span>
               </div>
               <button className="icon-btn" onClick={() => removeEntry(e.id)} aria-label="Remove entry"><Close /></button>
             </li>

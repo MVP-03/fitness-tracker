@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { formatNice, shiftDate } from '../lib/date.js'
 import { api } from '../lib/api.js'
 import { estimateNutrition } from '../lib/estimate.js'
-import { ChevronLeft, ChevronRight, Close, Sparkle, Plus } from '../components/Icons.jsx'
+import { ChevronLeft, ChevronRight, Close, Sparkle, Plus, CaretDown } from '../components/Icons.jsx'
 
 const MEAL_TYPES = ['breakfast', 'lunch', 'dinner', 'snack']
 const MICRO_FIELDS = [
@@ -20,6 +20,7 @@ export default function FoodLog({ date, setDate }) {
   const [showNewFood, setShowNewFood] = useState(false)
   const [logQty, setLogQty] = useState({})
   const [logMeal, setLogMeal] = useState({})
+  const [expanded, setExpanded] = useState({})
   const [showMicros, setShowMicros] = useState(false)
   const [estimating, setEstimating] = useState(false)
   const [estimateError, setEstimateError] = useState('')
@@ -152,33 +153,59 @@ export default function FoodLog({ date, setDate }) {
         <p className="empty">No foods yet — add one above to start logging.</p>
       ) : (
         <ul className="food-list">
-          {foods.map(food => (
-            <li key={food.id} className="food-row">
-              <div className="row-avatar">{food.name.trim().charAt(0) || '?'}</div>
-              <div className="food-info">
-                <div className="food-name">{food.name}</div>
-                <div className="food-meta">
-                  {food.serving_label} · {Math.round(food.calories)} kcal ·
-                  {' '}{Math.round(food.protein)}p / {Math.round(food.carbs)}c / {Math.round(food.fat)}f
+          {foods.map(food => {
+            const isOpen = !!expanded[food.id]
+            const hasMicros = MICRO_FIELDS.some(([key]) => Number(food[key]) > 0)
+            return (
+              <li key={food.id} className="food-row">
+                <div className="row-avatar">{food.name.trim().charAt(0) || '?'}</div>
+                <div className="food-info">
+                  <div className="food-name">{food.name}</div>
+                  <div className="food-meta">{food.serving_label}</div>
+                  <div className="macro-pills">
+                    <span className="macro-pill calories">{Math.round(food.calories)} kcal</span>
+                    <span className="macro-pill protein">{Math.round(food.protein)}g protein</span>
+                    <span className="macro-pill carbs">{Math.round(food.carbs)}g carbs</span>
+                    <span className="macro-pill fat">{Math.round(food.fat)}g fat</span>
+                  </div>
+                  {hasMicros && (
+                    <button
+                      type="button" className="nutrient-toggle"
+                      onClick={() => setExpanded(x => ({ ...x, [food.id]: !x[food.id] }))}
+                    >
+                      <CaretDown size={11} style={{ transform: isOpen ? 'rotate(180deg)' : 'none' }} />
+                      {isOpen ? 'Hide nutrients' : 'Show all nutrients'}
+                    </button>
+                  )}
+                  {isOpen && (
+                    <div className="nutrient-detail">
+                      {MICRO_FIELDS.map(([key, label]) => (
+                        <div key={key} className="nutrient-detail-item">
+                          <span className="nutrient-detail-label">{label}</span>
+                          <span className="nutrient-detail-value">{Math.round(Number(food[key]) || 0)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
-              <div className="food-actions">
-                <input
-                  type="number" step="0.25" min="0" className="qty-input"
-                  value={logQty[food.id] ?? 1}
-                  onChange={e => setLogQty(q => ({ ...q, [food.id]: e.target.value }))}
-                />
-                <select
-                  value={logMeal[food.id] ?? 'snack'}
-                  onChange={e => setLogMeal(m => ({ ...m, [food.id]: e.target.value }))}
-                >
-                  {MEAL_TYPES.map(m => <option key={m} value={m}>{m}</option>)}
-                </select>
-                <button className="add-btn" onClick={() => logEntry(food)}>Log</button>
-                <button className="icon-btn" onClick={() => removeFood(food.id)} aria-label="Delete food"><Close /></button>
-              </div>
-            </li>
-          ))}
+                <div className="food-actions">
+                  <input
+                    type="number" step="0.25" min="0" className="qty-input"
+                    value={logQty[food.id] ?? 1}
+                    onChange={e => setLogQty(q => ({ ...q, [food.id]: e.target.value }))}
+                  />
+                  <select
+                    value={logMeal[food.id] ?? 'snack'}
+                    onChange={e => setLogMeal(m => ({ ...m, [food.id]: e.target.value }))}
+                  >
+                    {MEAL_TYPES.map(m => <option key={m} value={m}>{m}</option>)}
+                  </select>
+                  <button className="add-btn" onClick={() => logEntry(food)}>Log</button>
+                  <button className="icon-btn" onClick={() => removeFood(food.id)} aria-label="Delete food"><Close /></button>
+                </div>
+              </li>
+            )
+          })}
         </ul>
       )}
     </div>
