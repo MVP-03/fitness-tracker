@@ -69,11 +69,11 @@ export const cloudApi = {
       const totals = { calories: 0, protein: 0, carbs: 0, fat: 0 }
       for (const k of MICRO_KEYS) totals[k] = 0
       for (const row of rows) {
-        totals.calories += row.calories
-        totals.protein += row.protein
-        totals.carbs += row.carbs
-        totals.fat += row.fat
-        for (const k of MICRO_KEYS) totals[k] += row[k] || 0
+        totals.calories += Number(row.calories) || 0
+        totals.protein += Number(row.protein) || 0
+        totals.carbs += Number(row.carbs) || 0
+        totals.fat += Number(row.fat) || 0
+        for (const k of MICRO_KEYS) totals[k] += Number(row[k]) || 0
       }
       return totals
     },

@@ -36,7 +36,7 @@ export default function Water({ date, setDate }) {
     })()
   }, [])
 
-  const total = entries.reduce((sum, e) => sum + e.amount_ml, 0)
+  const total = entries.reduce((sum, e) => sum + (Number(e.amount_ml) || 0), 0)
   const pct = goal > 0 ? Math.min(total / goal, 1) : 0
 
   async function addAmount(amount_ml) {
