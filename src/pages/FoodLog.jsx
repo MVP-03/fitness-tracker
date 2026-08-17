@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { formatNice, shiftDate } from '../lib/date.js'
 import { api } from '../lib/api.js'
+import { estimateNutrition } from '../lib/estimate.js'
 import { ChevronLeft, ChevronRight, Close, Sparkle, Plus } from '../components/Icons.jsx'
 
 const MEAL_TYPES = ['breakfast', 'lunch', 'dinner', 'snack']
@@ -52,7 +53,7 @@ export default function FoodLog({ date, setDate }) {
     setEstimating(true)
     setEstimateError('')
     try {
-      const est = await window.api.groq.estimate(newFood.name.trim())
+      const est = await estimateNutrition(newFood.name.trim())
       setNewFood(f => ({
         ...f,
         calories: est.calories, protein: est.protein, carbs: est.carbs, fat: est.fat,
