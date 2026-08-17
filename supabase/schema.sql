@@ -109,15 +109,19 @@ begin
   for t in select unnest(array['foods', 'meal_entries', 'weight_entries', 'workouts', 'water_entries', 'profiles'])
   loop
     execute format($f$
+      drop policy if exists "select own rows" on public.%I;
       create policy "select own rows" on public.%I
         for select using (auth.uid() = user_id);
+      drop policy if exists "insert own rows" on public.%I;
       create policy "insert own rows" on public.%I
         for insert with check (auth.uid() = user_id);
+      drop policy if exists "update own rows" on public.%I;
       create policy "update own rows" on public.%I
         for update using (auth.uid() = user_id);
+      drop policy if exists "delete own rows" on public.%I;
       create policy "delete own rows" on public.%I
         for delete using (auth.uid() = user_id);
-    $f$, t, t, t, t);
+    $f$, t, t, t, t, t, t, t, t);
   end loop;
 end $$;
 
