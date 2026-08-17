@@ -102,28 +102,59 @@ create index if not exists workouts_user_date_idx on public.workouts (user_id, d
 create index if not exists weight_entries_user_date_idx on public.weight_entries (user_id, date);
 create index if not exists water_entries_user_date_idx on public.water_entries (user_id, date);
 
-do $$
-declare
-  t text;
-begin
-  for t in select unnest(array['foods', 'meal_entries', 'weight_entries', 'workouts', 'water_entries', 'profiles'])
-  loop
-    execute format($f$
-      drop policy if exists "select own rows" on public.%I;
-      create policy "select own rows" on public.%I
-        for select using (auth.uid() = user_id);
-      drop policy if exists "insert own rows" on public.%I;
-      create policy "insert own rows" on public.%I
-        for insert with check (auth.uid() = user_id);
-      drop policy if exists "update own rows" on public.%I;
-      create policy "update own rows" on public.%I
-        for update using (auth.uid() = user_id);
-      drop policy if exists "delete own rows" on public.%I;
-      create policy "delete own rows" on public.%I
-        for delete using (auth.uid() = user_id);
-    $f$, t, t, t, t, t, t, t, t);
-  end loop;
-end $$;
+drop policy if exists "select own rows" on public.foods;
+create policy "select own rows" on public.foods for select using (auth.uid() = user_id);
+drop policy if exists "insert own rows" on public.foods;
+create policy "insert own rows" on public.foods for insert with check (auth.uid() = user_id);
+drop policy if exists "update own rows" on public.foods;
+create policy "update own rows" on public.foods for update using (auth.uid() = user_id);
+drop policy if exists "delete own rows" on public.foods;
+create policy "delete own rows" on public.foods for delete using (auth.uid() = user_id);
+
+drop policy if exists "select own rows" on public.meal_entries;
+create policy "select own rows" on public.meal_entries for select using (auth.uid() = user_id);
+drop policy if exists "insert own rows" on public.meal_entries;
+create policy "insert own rows" on public.meal_entries for insert with check (auth.uid() = user_id);
+drop policy if exists "update own rows" on public.meal_entries;
+create policy "update own rows" on public.meal_entries for update using (auth.uid() = user_id);
+drop policy if exists "delete own rows" on public.meal_entries;
+create policy "delete own rows" on public.meal_entries for delete using (auth.uid() = user_id);
+
+drop policy if exists "select own rows" on public.weight_entries;
+create policy "select own rows" on public.weight_entries for select using (auth.uid() = user_id);
+drop policy if exists "insert own rows" on public.weight_entries;
+create policy "insert own rows" on public.weight_entries for insert with check (auth.uid() = user_id);
+drop policy if exists "update own rows" on public.weight_entries;
+create policy "update own rows" on public.weight_entries for update using (auth.uid() = user_id);
+drop policy if exists "delete own rows" on public.weight_entries;
+create policy "delete own rows" on public.weight_entries for delete using (auth.uid() = user_id);
+
+drop policy if exists "select own rows" on public.workouts;
+create policy "select own rows" on public.workouts for select using (auth.uid() = user_id);
+drop policy if exists "insert own rows" on public.workouts;
+create policy "insert own rows" on public.workouts for insert with check (auth.uid() = user_id);
+drop policy if exists "update own rows" on public.workouts;
+create policy "update own rows" on public.workouts for update using (auth.uid() = user_id);
+drop policy if exists "delete own rows" on public.workouts;
+create policy "delete own rows" on public.workouts for delete using (auth.uid() = user_id);
+
+drop policy if exists "select own rows" on public.water_entries;
+create policy "select own rows" on public.water_entries for select using (auth.uid() = user_id);
+drop policy if exists "insert own rows" on public.water_entries;
+create policy "insert own rows" on public.water_entries for insert with check (auth.uid() = user_id);
+drop policy if exists "update own rows" on public.water_entries;
+create policy "update own rows" on public.water_entries for update using (auth.uid() = user_id);
+drop policy if exists "delete own rows" on public.water_entries;
+create policy "delete own rows" on public.water_entries for delete using (auth.uid() = user_id);
+
+drop policy if exists "select own rows" on public.profiles;
+create policy "select own rows" on public.profiles for select using (auth.uid() = user_id);
+drop policy if exists "insert own rows" on public.profiles;
+create policy "insert own rows" on public.profiles for insert with check (auth.uid() = user_id);
+drop policy if exists "update own rows" on public.profiles;
+create policy "update own rows" on public.profiles for update using (auth.uid() = user_id);
+drop policy if exists "delete own rows" on public.profiles;
+create policy "delete own rows" on public.profiles for delete using (auth.uid() = user_id);
 
 grant usage on schema public to authenticated, anon;
 grant select, insert, update, delete on public.foods, public.meal_entries, public.weight_entries, public.workouts, public.water_entries, public.profiles to authenticated;
