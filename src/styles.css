@@ -576,7 +576,7 @@ button[type='submit']:active, .add-btn:active { transform: scale(0.97); box-shad
   font-size: 12px; color: var(--text-dim);
 }
 .micro-bar-track {
-  height: 6px; border-radius: 4px;
+  height: 6px; border-radius: var(--radius-sm);
   background: var(--surface-2);
   overflow: hidden;
 }
@@ -584,7 +584,7 @@ button[type='submit']:active, .add-btn:active { transform: scale(0.97); box-shad
   height: 100%;
   width: 100%;
   background: var(--accent);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   transform-origin: left;
   transition: transform 0.4s var(--ease);
 }
