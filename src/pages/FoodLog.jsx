@@ -65,6 +65,7 @@ export default function FoodLog({ date, setDate }) {
       const est = await estimateNutrition(newFood.name.trim())
       setNewFood(f => ({
         ...f,
+        name: est.name || f.name,
         calories: est.calories, protein: est.protein, carbs: est.carbs, fat: est.fat,
         fiber: est.fiber, sugar: est.sugar, sodium: est.sodium,
         potassium: est.potassium, calcium: est.calcium, iron: est.iron, vitamin_c: est.vitamin_c,
