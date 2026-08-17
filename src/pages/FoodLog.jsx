@@ -23,6 +23,7 @@ export default function FoodLog({ date, setDate }) {
   const [showMicros, setShowMicros] = useState(false)
   const [estimating, setEstimating] = useState(false)
   const [estimateError, setEstimateError] = useState('')
+  const [saveError, setSaveError] = useState('')
 
   async function refreshFoods() {
     setFoods(await api.foods.list())
@@ -32,6 +33,7 @@ export default function FoodLog({ date, setDate }) {
 
   async function addFood(ev) {
     ev.preventDefault()
+    setSaveError('')
     const payload = {
       name: newFood.name.trim(),
       serving_label: newFood.serving_label.trim() || '1 serving',
@@ -42,10 +44,14 @@ export default function FoodLog({ date, setDate }) {
       ...Object.fromEntries(MICRO_FIELDS.map(([k]) => [k, Number(newFood[k]) || 0])),
     }
     if (!payload.name) return
-    await api.foods.add(payload)
-    setNewFood(emptyFood)
-    setShowNewFood(false)
-    refreshFoods()
+    try {
+      await api.foods.add(payload)
+      setNewFood(emptyFood)
+      setShowNewFood(false)
+      refreshFoods()
+    } catch (err) {
+      setSaveError(err.message || 'Could not save food')
+    }
   }
 
   async function estimateWithAI() {
@@ -135,6 +141,7 @@ export default function FoodLog({ date, setDate }) {
             />
           ))}
 
+          {saveError && <div className="form-error">{saveError}</div>}
           <button type="submit">Save food</button>
         </form>
       )}
