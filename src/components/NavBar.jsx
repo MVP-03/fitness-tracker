@@ -64,6 +64,7 @@ const TABS = [
 ]
 
 export default function NavBar({ active, onChange, userEmail, userName, onSignOut }) {
+  const displayName = userName || (userEmail ? userEmail.split('@')[0] : '')
   return (
     <nav className="sidebar" aria-label="Main">
       <div className="sidebar-brand">
@@ -98,8 +99,8 @@ export default function NavBar({ active, onChange, userEmail, userName, onSignOu
               if (window.confirm('Sign out?')) onSignOut?.()
             }}
           >
-            <span className="nav-avatar">{(userName || userEmail).trim().charAt(0).toUpperCase()}</span>
-            <span className="nav-email">{userName || userEmail}</span>
+            <span className="nav-avatar">{displayName.trim().charAt(0).toUpperCase()}</span>
+            <span className="nav-email">{displayName}</span>
           </button>
         )}
       </div>

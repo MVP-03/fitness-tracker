@@ -16,7 +16,7 @@ async function estimateNutrition(description, apiKey) {
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
+      model: 'openai/gpt-oss-120b',
       temperature: 0.2,
       response_format: { type: 'json_object' },
       messages: [
