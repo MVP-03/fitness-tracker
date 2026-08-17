@@ -5,6 +5,7 @@ import { calculateAge, todayISO } from '../lib/date.js'
 import { api } from '../lib/api.js'
 
 const empty = {
+  name: '',
   sex: 'male',
   date_of_birth: '',
   height_cm: '',
@@ -29,7 +30,7 @@ export default function Onboarding({ onComplete }) {
     weekly_rate_kg: Number(profile.weekly_rate_kg) || 0.5,
   }
 
-  const ready = profile.date_of_birth && profile.height_cm && profile.current_weight_kg && age !== null
+  const ready = profile.name.trim() && profile.date_of_birth && profile.height_cm && profile.current_weight_kg && age !== null
   const goals = ready ? calculateGoals(numericProfile) : null
 
   async function start() {
@@ -39,7 +40,7 @@ export default function Onboarding({ onComplete }) {
     try {
       await api.settings.set('profile', JSON.stringify(profile))
       await api.settings.set('goals', JSON.stringify(goals))
-      onComplete(goals)
+      onComplete(goals, profile.name.trim())
     } catch (err) {
       setError(err?.message || 'Failed to save your profile. Please try again.')
       setSaving(false)
@@ -60,6 +61,10 @@ export default function Onboarding({ onComplete }) {
         </p>
 
         <form className="profile-form onboarding-form" onSubmit={(e) => e.preventDefault()}>
+          <label>Name
+            <input type="text" placeholder="Your name" value={profile.name}
+              onChange={e => setProfile(p => ({ ...p, name: e.target.value }))} />
+          </label>
           <label>Sex
             <select value={profile.sex} onChange={e => setProfile(p => ({ ...p, sex: e.target.value }))}>
               <option value="male">Male</option>
@@ -99,6 +104,7 @@ export default function Onboarding({ onComplete }) {
           <div className="goal-preview onboarding-preview">
             <div className="section-header"><h3>Your daily targets</h3></div>
             <div className="goal-grid">
+              <Stat label="Welcome" value={profile.name.trim().split(' ')[0]} />
               <Stat label="Age" value={`${age}`} />
               <Stat label="Calorie target" value={`${goals.calories} kcal`} />
               <Stat label="Protein" value={`${goals.protein} g`} />

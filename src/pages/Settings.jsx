@@ -1,17 +1,34 @@
 import { useEffect, useState } from 'react'
-import { isCloudConfigured } from '../lib/supabaseClient.js'
+import { isCloudConfigured, supabase } from '../lib/supabaseClient.js'
+import { useAuth } from '../lib/AuthContext.jsx'
+import { api } from '../lib/api.js'
 
 const isElectron = Boolean(window.api)
 
 export default function Settings() {
   const [groqKey, setGroqKey] = useState('')
   const [saved, setSaved] = useState(false)
+  const { session } = useAuth()
+  const [signingOut, setSigningOut] = useState(false)
+  const [profileName, setProfileName] = useState('')
+
+  async function signOut() {
+    setSigningOut(true)
+    await supabase.auth.signOut()
+  }
 
   useEffect(() => {
     if (!isElectron) return
     (async () => {
       const stored = await window.api.settings.get('groq_api_key')
       if (stored) setGroqKey(stored)
+    })()
+  }, [])
+
+  useEffect(() => {
+    (async () => {
+      const stored = await api.settings.get('profile')
+      if (stored) setProfileName(JSON.parse(stored).name || '')
     })()
   }, [])
 
@@ -62,6 +79,18 @@ export default function Settings() {
             : 'Not connected yet. Once a Supabase project is ready, its URL and anon key go here so this app can log in each person separately and sync their food, weight and workout data to one shared backend.'}
         </p>
       </div>
+
+      {isCloudConfigured && session && (
+        <div className="settings-block">
+          <h4>Account</h4>
+          <p className="hint">
+            Signed in as {profileName ? `${profileName} (${session.user.email})` : session.user.email}.
+          </p>
+          <button className="danger-btn" onClick={signOut} disabled={signingOut}>
+            {signingOut ? 'Signing out…' : 'Log out'}
+          </button>
+        </div>
+      )}
     </div>
   )
 }

@@ -63,7 +63,7 @@ const TABS = [
   { id: 'settings', label: 'Settings', Icon: SettingsIcon },
 ]
 
-export default function NavBar({ active, onChange, userEmail, onSignOut }) {
+export default function NavBar({ active, onChange, userEmail, userName, onSignOut }) {
   return (
     <nav className="sidebar" aria-label="Main">
       <div className="sidebar-brand">
@@ -90,10 +90,17 @@ export default function NavBar({ active, onChange, userEmail, onSignOut }) {
       <div className="sidebar-footer">
         <ThemeToggle />
         {userEmail && (
-          <div className="nav-user">
-            <span className="nav-email" title={userEmail}>{userEmail}</span>
-            <button className="link-btn" onClick={onSignOut}>Sign out</button>
-          </div>
+          <button
+            type="button"
+            className="nav-user"
+            title={`Sign out of ${userEmail}`}
+            onClick={() => {
+              if (window.confirm('Sign out?')) onSignOut?.()
+            }}
+          >
+            <span className="nav-avatar">{(userName || userEmail).trim().charAt(0).toUpperCase()}</span>
+            <span className="nav-email">{userName || userEmail}</span>
+          </button>
         )}
       </div>
     </nav>

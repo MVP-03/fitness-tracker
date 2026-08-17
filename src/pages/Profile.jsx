@@ -4,6 +4,7 @@ import { calculateAge, formatBirthday } from '../lib/date.js'
 import { api } from '../lib/api.js'
 
 const emptyProfile = {
+  name: '',
   sex: 'male',
   date_of_birth: '',
   height_cm: '',
@@ -68,6 +69,7 @@ export default function Profile({ onGoalsApplied }) {
       <form className="profile-form" onSubmit={(e) => e.preventDefault()}>
         {locked ? (
           <>
+            {profile.name && <LockedField label="Name" value={profile.name} />}
             <LockedField label="Sex" value={profile.sex === 'female' ? 'Female' : 'Male'} />
             <LockedField label="Birthday" value={profile.date_of_birth ? `${formatBirthday(profile.date_of_birth)} (${numericProfile.age})` : '—'} />
             <LockedField label="Height (cm)" value={profile.height_cm} />

@@ -19,12 +19,14 @@ export default function App() {
   const [date, setDate] = useState(todayISO())
   const { session, loading } = useAuth()
   const [onboarded, setOnboarded] = useState(null)
+  const [profileName, setProfileName] = useState('')
 
   useEffect(() => {
     if (isCloudConfigured && !session) return
     (async () => {
       const stored = await api.settings.get('profile')
       setOnboarded(Boolean(stored))
+      if (stored) setProfileName(JSON.parse(stored).name || '')
     })()
   }, [session])
 
@@ -34,7 +36,13 @@ export default function App() {
   }
 
   if (onboarded === null) return <div className="auth-screen"><div className="hint">Loading…</div></div>
-  if (!onboarded) return <Onboarding onComplete={() => setOnboarded(true)} />
+  if (!onboarded) {
+    return (
+      <Onboarding
+        onComplete={(_, name) => { setOnboarded(true); setProfileName(name) }}
+      />
+    )
+  }
 
   return (
     <div className="app">
@@ -42,6 +50,7 @@ export default function App() {
         active={tab}
         onChange={setTab}
         userEmail={session?.user?.email}
+        userName={profileName}
         onSignOut={isCloudConfigured ? () => supabase.auth.signOut() : null}
       />
       <main className="main">
