@@ -18,6 +18,8 @@ export default function Weight() {
     ev.preventDefault()
     const w = Number(weight)
     if (!w) return
+    const confirmed = window.confirm(`Log ${w} kg for ${formatNice(date)}? This overwrites any existing entry for that day.`)
+    if (!confirmed) return
     await api.weight.upsert(date, w)
     setWeight('')
     refresh()
@@ -66,7 +68,8 @@ export default function Weight() {
         <ul className="entry-list">
           {entries.map(e => (
             <li key={e.id} className="entry-row">
-              <div className="entry-name">{formatNice(e.date)}</div>
+              <div className="row-avatar">{e.weight_kg.toFixed(0)}</div>
+              <div className="entry-info entry-name">{formatNice(e.date)}</div>
               <div className="entry-macros"><span>{e.weight_kg.toFixed(1)} kg</span></div>
               <button className="icon-btn" onClick={() => remove(e.id)} aria-label="Remove entry"><Close /></button>
             </li>
@@ -85,12 +88,17 @@ function WeightChart({ data }) {
   const x = (i) => pad + (i / (data.length - 1)) * (w - pad * 2)
   const y = (v) => h - pad - ((v - min) / (max - min || 1)) * (h - pad * 2)
   const points = data.map((d, i) => `${x(i)},${y(d.weight_kg)}`).join(' ')
+  const areaPoints = `${x(0)},${h - pad} ${points} ${x(data.length - 1)},${h - pad}`
+  const lastIndex = data.length - 1
 
   return (
     <svg width="100%" viewBox={`0 0 ${w} ${h}`} className="weight-chart">
+      <polygon points={areaPoints} className="chart-area" />
       <polyline points={points} fill="none" className="chart-line" />
       {data.map((d, i) => (
-        <circle key={d.id} cx={x(i)} cy={y(d.weight_kg)} r="3" className="chart-dot" />
+        i === lastIndex
+          ? <circle key={d.id} cx={x(i)} cy={y(d.weight_kg)} r="4.5" className="chart-dot-latest" />
+          : <circle key={d.id} cx={x(i)} cy={y(d.weight_kg)} r="3" className="chart-dot" />
       ))}
     </svg>
   )

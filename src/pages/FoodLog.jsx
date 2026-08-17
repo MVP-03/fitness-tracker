@@ -44,6 +44,8 @@ export default function FoodLog({ date, setDate }) {
       ...Object.fromEntries(MICRO_FIELDS.map(([k]) => [k, Number(newFood[k]) || 0])),
     }
     if (!payload.name) return
+    const confirmed = window.confirm(`Save "${payload.name}" to your food library?`)
+    if (!confirmed) return
     try {
       await api.foods.add(payload)
       setNewFood(emptyFood)
@@ -152,6 +154,7 @@ export default function FoodLog({ date, setDate }) {
         <ul className="food-list">
           {foods.map(food => (
             <li key={food.id} className="food-row">
+              <div className="row-avatar">{food.name.trim().charAt(0) || '?'}</div>
               <div className="food-info">
                 <div className="food-name">{food.name}</div>
                 <div className="food-meta">

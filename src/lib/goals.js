@@ -18,6 +18,12 @@ export const ACTIVITY_MULTIPLIERS = {
 }
 
 const KCAL_PER_KG = 7700 // approx energy stored per kg of bodyweight
+const WATER_ML_PER_KG = 35 // general adult guideline, moderate activity
+
+export function calculateWaterGoalMl(current_weight_kg) {
+  if (!current_weight_kg) return 2500
+  return Math.round((current_weight_kg * WATER_ML_PER_KG) / 50) * 50
+}
 
 // Mifflin-St Jeor BMR, then TDEE, then a calorie target that moves current
 // weight toward target weight at a safe weekly rate.
@@ -64,6 +70,7 @@ export function calculateGoals(profile) {
     carbs,
     fat,
     ...MICRO_TARGETS,
+    water_ml: calculateWaterGoalMl(current_weight_kg),
     bmr: Math.round(bmr),
     tdee: Math.round(tdee),
     direction,

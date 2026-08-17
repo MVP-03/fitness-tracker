@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import MacroRing from '../components/MacroRing.jsx'
+import WeeklyTracker from '../components/WeeklyTracker.jsx'
 import { ChevronLeft, ChevronRight, Close } from '../components/Icons.jsx'
 import { formatNice, shiftDate } from '../lib/date.js'
 import { MICRO_TARGETS } from '../lib/goals.js'
@@ -61,6 +62,8 @@ export default function Dashboard({ date, setDate }) {
         <MacroRing value={summary.fat} goal={goals.fat} label="Fat (g)" color="var(--fat)" />
       </div>
 
+      <WeeklyTracker goalCalories={goals.calories} />
+
       <div className="section-header">
         <h3>Today's entries</h3>
         <button className="link-btn" onClick={() => setEditingGoals(v => !v)}>
@@ -78,7 +81,8 @@ export default function Dashboard({ date, setDate }) {
         <ul className="entry-list">
           {entries.map(e => (
             <li key={e.id} className="entry-row">
-              <div>
+              <div className="row-avatar">{e.food_name.trim().charAt(0) || '?'}</div>
+              <div className="entry-info">
                 <div className="entry-name">{e.food_name}</div>
                 <div className="entry-meta">{e.meal_type} · x{e.quantity}</div>
               </div>

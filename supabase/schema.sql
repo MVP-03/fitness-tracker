@@ -64,33 +64,49 @@ create table if not exists public.workouts (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.water_entries (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  date date not null,
+  amount_ml numeric not null,
+  created_at timestamptz not null default now()
+);
+
 create table if not exists public.profiles (
   user_id uuid primary key references auth.users(id) on delete cascade,
   sex text,
-  age integer,
+  date_of_birth date,
   height_cm numeric,
   current_weight_kg numeric,
   target_weight_kg numeric,
   activity_level text,
   weekly_rate_kg numeric,
-  goals jsonb
+  goals jsonb,
+  onboarded boolean not null default false
 );
+
+-- Migrate installs created before date_of_birth/onboarded existed.
+alter table public.profiles add column if not exists date_of_birth date;
+alter table public.profiles add column if not exists onboarded boolean not null default false;
+alter table public.profiles drop column if exists age;
 
 alter table public.foods enable row level security;
 alter table public.meal_entries enable row level security;
 alter table public.weight_entries enable row level security;
 alter table public.workouts enable row level security;
+alter table public.water_entries enable row level security;
 alter table public.profiles enable row level security;
 
 create index if not exists meal_entries_user_date_idx on public.meal_entries (user_id, date);
 create index if not exists workouts_user_date_idx on public.workouts (user_id, date);
 create index if not exists weight_entries_user_date_idx on public.weight_entries (user_id, date);
+create index if not exists water_entries_user_date_idx on public.water_entries (user_id, date);
 
 do $$
 declare
   t text;
 begin
-  for t in select unnest(array['foods', 'meal_entries', 'weight_entries', 'workouts', 'profiles'])
+  for t in select unnest(array['foods', 'meal_entries', 'weight_entries', 'workouts', 'water_entries', 'profiles'])
   loop
     execute format($f$
       create policy "select own rows" on public.%I
@@ -104,3 +120,6 @@ begin
     $f$, t, t, t, t);
   end loop;
 end $$;
+
+grant usage on schema public to authenticated, anon;
+grant select, insert, update, delete on public.foods, public.meal_entries, public.weight_entries, public.workouts, public.water_entries, public.profiles to authenticated;

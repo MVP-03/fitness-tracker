@@ -53,6 +53,13 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
+  CREATE TABLE IF NOT EXISTS water_entries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT NOT NULL,
+    amount_ml REAL NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
   CREATE TABLE IF NOT EXISTS settings (
     key TEXT PRIMARY KEY,
     value TEXT
@@ -149,10 +156,25 @@ function deleteWorkout(id) {
   return true
 }
 
+// ---- Water entries ----
+function listWaterEntries(date) {
+  return db.prepare('SELECT * FROM water_entries WHERE date = ? ORDER BY created_at').all(date)
+}
+function addWaterEntry(entry) {
+  const stmt = db.prepare('INSERT INTO water_entries (date, amount_ml) VALUES (@date, @amount_ml)')
+  const info = stmt.run(entry)
+  return { id: info.lastInsertRowid, ...entry }
+}
+function deleteWaterEntry(id) {
+  db.prepare('DELETE FROM water_entries WHERE id = ?').run(id)
+  return true
+}
+
 module.exports = {
   getSetting, setSetting,
   listFoods, addFood, deleteFood,
   listMealEntries, addMealEntry, deleteMealEntry, dailySummary,
   listWeightEntries, upsertWeightEntry, deleteWeightEntry,
   listWorkouts, addWorkout, deleteWorkout,
+  listWaterEntries, addWaterEntry, deleteWaterEntry,
 }

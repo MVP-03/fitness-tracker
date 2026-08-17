@@ -11,6 +11,7 @@ export const api = isCloudConfigured
       meals: cloudApi.meals,
       weight: cloudApi.weight,
       workouts: cloudApi.workouts,
+      water: cloudApi.water,
       settings: {
         get: (key, fallback) => CLOUD_SETTINGS_KEYS.has(key)
           ? cloudApi.settings.get(key).then(v => v ?? fallback)

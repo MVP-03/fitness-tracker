@@ -81,6 +81,10 @@ function registerIpc(db, estimateNutrition) {
   ipcMain.handle('workouts:add', (_e, entry) => db.addWorkout(entry))
   ipcMain.handle('workouts:delete', (_e, id) => db.deleteWorkout(id))
 
+  ipcMain.handle('water:list', (_e, date) => db.listWaterEntries(date))
+  ipcMain.handle('water:add', (_e, entry) => db.addWaterEntry(entry))
+  ipcMain.handle('water:delete', (_e, id) => db.deleteWaterEntry(id))
+
   ipcMain.handle('settings:get', (_e, key, fallback) => db.getSetting(key, fallback))
   ipcMain.handle('settings:set', (_e, key, value) => db.setSetting(key, value))
 }

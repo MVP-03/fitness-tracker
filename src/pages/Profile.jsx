@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { calculateGoals, ACTIVITY_MULTIPLIERS } from '../lib/goals.js'
+import { calculateAge, formatBirthday } from '../lib/date.js'
 import { api } from '../lib/api.js'
 
 const emptyProfile = {
   sex: 'male',
-  age: '',
+  date_of_birth: '',
   height_cm: '',
   current_weight_kg: '',
   target_weight_kg: '',
@@ -14,18 +15,22 @@ const emptyProfile = {
 
 export default function Profile({ onGoalsApplied }) {
   const [profile, setProfile] = useState(emptyProfile)
+  const [locked, setLocked] = useState(false)
   const [applied, setApplied] = useState(false)
 
   useEffect(() => {
     (async () => {
       const stored = await api.settings.get('profile')
-      if (stored) setProfile(JSON.parse(stored))
+      if (stored) {
+        setProfile(JSON.parse(stored))
+        setLocked(true)
+      }
     })()
   }, [])
 
   const numericProfile = {
     ...profile,
-    age: Number(profile.age),
+    age: calculateAge(profile.date_of_birth),
     height_cm: Number(profile.height_cm),
     current_weight_kg: Number(profile.current_weight_kg),
     target_weight_kg: profile.target_weight_kg ? Number(profile.target_weight_kg) : null,
@@ -35,8 +40,13 @@ export default function Profile({ onGoalsApplied }) {
   const goals = calculateGoals(numericProfile)
 
   async function apply() {
+    const confirmed = window.confirm(
+      'Apply these goals? This replaces your current daily calorie and macro targets on the Today dashboard.'
+    )
+    if (!confirmed) return
     await api.settings.set('profile', JSON.stringify(profile))
     await api.settings.set('goals', JSON.stringify(goals))
+    setLocked(true)
     setApplied(true)
     onGoalsApplied?.(goals)
     setTimeout(() => setApplied(false), 2000)
@@ -50,25 +60,36 @@ export default function Profile({ onGoalsApplied }) {
     <div className="page">
       <div className="section-header"><h3>Profile & goal calculator</h3></div>
       <p className="hint">
-        Set your stats and target weight — daily calorie, protein, carb and fat
-        targets are calculated to move you toward that goal at a safe pace.
+        {locked
+          ? "Sex, birthday and height are locked in from setup — they rarely change and keep your calorie math consistent over time. Weight, target and activity level stay editable."
+          : 'Set your stats and target weight — daily calorie, protein, carb and fat targets are calculated to move you toward that goal at a safe pace.'}
       </p>
 
       <form className="profile-form" onSubmit={(e) => e.preventDefault()}>
-        <label>Sex
-          <select value={profile.sex} onChange={e => setProfile(p => ({ ...p, sex: e.target.value }))}>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
-        </label>
-        <label>Age
-          <input type="number" value={profile.age}
-            onChange={e => setProfile(p => ({ ...p, age: e.target.value }))} />
-        </label>
-        <label>Height (cm)
-          <input type="number" value={profile.height_cm}
-            onChange={e => setProfile(p => ({ ...p, height_cm: e.target.value }))} />
-        </label>
+        {locked ? (
+          <>
+            <LockedField label="Sex" value={profile.sex === 'female' ? 'Female' : 'Male'} />
+            <LockedField label="Birthday" value={profile.date_of_birth ? `${formatBirthday(profile.date_of_birth)} (${numericProfile.age})` : '—'} />
+            <LockedField label="Height (cm)" value={profile.height_cm} />
+          </>
+        ) : (
+          <>
+            <label>Sex
+              <select value={profile.sex} onChange={e => setProfile(p => ({ ...p, sex: e.target.value }))}>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </label>
+            <label>Birthday
+              <input type="date" value={profile.date_of_birth}
+                onChange={e => setProfile(p => ({ ...p, date_of_birth: e.target.value }))} />
+            </label>
+            <label>Height (cm)
+              <input type="number" value={profile.height_cm}
+                onChange={e => setProfile(p => ({ ...p, height_cm: e.target.value }))} />
+            </label>
+          </>
+        )}
         <label>Current weight (kg)
           <input type="number" step="0.1" value={profile.current_weight_kg}
             onChange={e => setProfile(p => ({ ...p, current_weight_kg: e.target.value }))} />
@@ -121,6 +142,15 @@ function Stat({ label, value }) {
     <div className="goal-stat">
       <div className="goal-stat-value">{value}</div>
       <div className="goal-stat-label">{label}</div>
+    </div>
+  )
+}
+
+function LockedField({ label, value }) {
+  return (
+    <div className="locked-field">
+      <span className="locked-field-label">{label}</span>
+      <span className="locked-field-value">{value}</span>
     </div>
   )
 }

@@ -22,6 +22,11 @@ contextBridge.exposeInMainWorld('api', {
     add: (entry) => ipcRenderer.invoke('workouts:add', entry),
     delete: (id) => ipcRenderer.invoke('workouts:delete', id),
   },
+  water: {
+    list: (date) => ipcRenderer.invoke('water:list', date),
+    add: (entry) => ipcRenderer.invoke('water:add', entry),
+    delete: (id) => ipcRenderer.invoke('water:delete', id),
+  },
   settings: {
     get: (key, fallback) => ipcRenderer.invoke('settings:get', key, fallback),
     set: (key, value) => ipcRenderer.invoke('settings:set', key, value),

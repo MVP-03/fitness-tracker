@@ -102,6 +102,24 @@ export const cloudApi = {
     },
   },
 
+  water: {
+    async list(date) {
+      const user_id = await uid()
+      return check(await supabase.from('water_entries').select('*')
+        .eq('user_id', user_id).eq('date', date).order('created_at'))
+    },
+    async add(entry) {
+      const user_id = await uid()
+      const rows = check(await supabase.from('water_entries').insert({ ...entry, user_id }).select())
+      return rows[0]
+    },
+    async delete(id) {
+      await uid()
+      check(await supabase.from('water_entries').delete().eq('id', id))
+      return true
+    },
+  },
+
   // 'profile' and 'goals' live in the cloud profiles table so they follow the
   // signed-in person; any other setting (e.g. groq_api_key) stays local per
   // machine and is handled by the caller falling back to window.api.settings.
@@ -113,8 +131,9 @@ export const cloudApi = {
       if (!row) return null
       if (key === 'goals') return row.goals ? JSON.stringify(row.goals) : null
       if (key === 'profile') {
-        const { sex, age, height_cm, current_weight_kg, target_weight_kg, activity_level, weekly_rate_kg } = row
-        return JSON.stringify({ sex, age, height_cm, current_weight_kg, target_weight_kg, activity_level, weekly_rate_kg })
+        if (!row.onboarded) return null
+        const { sex, date_of_birth, height_cm, current_weight_kg, target_weight_kg, activity_level, weekly_rate_kg } = row
+        return JSON.stringify({ sex, date_of_birth, height_cm, current_weight_kg, target_weight_kg, activity_level, weekly_rate_kg })
       }
       return null
     },
@@ -126,7 +145,7 @@ export const cloudApi = {
       }
       if (key === 'profile') {
         const p = JSON.parse(value)
-        check(await supabase.from('profiles').upsert({ user_id, ...p }, { onConflict: 'user_id' }))
+        check(await supabase.from('profiles').upsert({ user_id, ...p, onboarded: true }, { onConflict: 'user_id' }))
         return
       }
     },

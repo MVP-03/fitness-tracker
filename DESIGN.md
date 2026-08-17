@@ -29,6 +29,19 @@ typography:
     fontFamily: "Geist, ui-sans-serif, system-ui, sans-serif"
     fontSize: "19px"
     fontWeight: 700
+  scale:
+    micro: "10px"
+    micro-alt: "10.5px"
+    caption: "11px"
+    caption-alt: "11.5px"
+    meta: "12px"
+    meta-alt: "12.5px"
+    ui: "13px"
+    ui-alt: "13.5px"
+    body-alt: "14px"
+    emphasis-sm: "15px"
+    emphasis: "16px"
+    display-numeral: "22px"
 rounded:
   sm: "8px"
   md: "14px"
@@ -106,6 +119,21 @@ Restrained strategy: neutral cream/ink carries the surface, one committed blue a
 - **Numeral** (700, 19px, tabular): ring center values, the day's weight-in-kg display. The only place weight is given to a number over a word.
 - **Body** (400, 14.5px, 1.5 line-height): all paragraph copy, hints, form labels, list entry text.
 - **Label** (500, 12.5px, 0.08em tracking, uppercase, Geist Pixel Square): section headers ("TODAY'S ENTRIES", "MICRONUTRIENTS") stand *as* the heading itself — never as a small kicker floating above a larger heading.
+
+### Type Scale
+
+The three named roles above cover intent; beneath them the app runs a fine step-scale for secondary and data-dense UI text, since this is a daily-use log with a lot of small metadata (meal meta, macros, form labels, stat cards) rather than a marketing surface with only a few type sizes. All steps use the Body font family (Geist) unless noted. Adjacent half-step pairs (11 / 11.5, 12 / 12.5, 13 / 13.5) are not separately intentional decisions — either is valid within that step; don't invent a new size between or around them.
+
+| Step | Size | Used for |
+|---|---|---|
+| Micro | 10–10.5px | Ring goal text inside the macro-ring SVG (fixed to the ring's own coordinate space, doesn't scale with layout); avatar initials on the smallest phones |
+| Caption | 11–11.5px | Row-avatar initials, form field labels, sidebar email |
+| Meta | 12–12.5px | List-row meta (meal type, food serving, micronutrient bars), hints, form errors/info, the pixel-square section Label |
+| UI | 13–13.5px | Buttons, inputs/selects, nav items, link buttons, the weight delta |
+| Body | 14–14.5px | Paragraph copy, list entry names, settings block headings — the named Body role |
+| Emphasis | 15–16px | Auth-screen wordmark, goal-stat card values — a step up for compact callouts, short of a full Numeral |
+| Numeral | 19px | Ring center values — the named Numeral role |
+| Display Numeral | 22px | Today's logged weight-in-kg — the one larger numeral, reserved for the single most important number on its page |
 
 ### Named Rules
 **The One Display Voice Rule.** Geist Pixel Square never appears in a sentence-case or lowercase string, and never at a size larger than ~13px. It is a stamp, not a headline font.

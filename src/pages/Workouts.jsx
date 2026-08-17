@@ -78,7 +78,8 @@ export default function Workouts({ date, setDate }) {
         <ul className="entry-list">
           {entries.map(w => (
             <li key={w.id} className="entry-row">
-              <div>
+              <div className="row-avatar">{w.name.trim().charAt(0) || '?'}</div>
+              <div className="entry-info">
                 <div className="entry-name">{w.name}</div>
                 <div className="entry-meta">
                   {[

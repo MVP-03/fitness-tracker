@@ -1,5 +1,6 @@
 import PixelMark from './PixelMark.jsx'
 import ThemeToggle from './ThemeToggle.jsx'
+import { Droplet } from './Icons.jsx'
 
 function DashboardIcon() {
   return (
@@ -55,6 +56,7 @@ function SettingsIcon() {
 const TABS = [
   { id: 'dashboard', label: 'Today', Icon: DashboardIcon },
   { id: 'food', label: 'Food', Icon: FoodIcon },
+  { id: 'water', label: 'Water', Icon: Droplet },
   { id: 'weight', label: 'Weight', Icon: WeightIcon },
   { id: 'workouts', label: 'Workouts', Icon: WorkoutIcon },
   { id: 'profile', label: 'Profile', Icon: ProfileIcon },
@@ -76,6 +78,8 @@ export default function NavBar({ active, onChange, userEmail, onSignOut }) {
             className={`nav-item ${active === id ? 'active' : ''}`}
             onClick={() => onChange(id)}
             aria-current={active === id ? 'page' : undefined}
+            aria-label={label}
+            title={label}
           >
             <Icon />
             <span>{label}</span>

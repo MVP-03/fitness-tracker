@@ -118,7 +118,7 @@ button:disabled { opacity: 0.55; cursor: default; transform: none; }
 
 /* ---------------------------------------------------------------- shell */
 
-.app { display: flex; height: 100vh; overflow: hidden; }
+.app { display: flex; height: 100dvh; overflow: hidden; }
 
 .sidebar {
   width: 216px;
@@ -206,9 +206,16 @@ button:disabled { opacity: 0.55; cursor: default; transform: none; }
   white-space: nowrap;
 }
 
-.main { flex: 1; overflow-y: auto; padding: 36px 40px 72px; }
+.main {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: clamp(16px, 4vw, 36px) clamp(12px, 4vw, 40px) clamp(40px, 8vw, 72px);
+  padding-bottom: max(clamp(40px, 8vw, 72px), env(safe-area-inset-bottom));
+}
 
-.page { max-width: 780px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+.page { max-width: 780px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: clamp(14px, 3.5vw, 22px); }
 
 /* ---------------------------------------------------------------- nav / date */
 
@@ -216,38 +223,73 @@ button:disabled { opacity: 0.55; cursor: default; transform: none; }
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 18px;
+  gap: clamp(10px, 3vw, 18px);
 }
 .date-nav button {
   background: var(--surface);
   border: 1px solid var(--border);
   color: var(--text-dim);
-  width: 30px; height: 30px;
+  width: clamp(30px, 8vw, 38px);
+  height: clamp(30px, 8vw, 38px);
+  flex-shrink: 0;
   border-radius: 999px;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
 }
 .date-nav button:hover { color: var(--accent); border-color: var(--accent); }
-.date-label { font-weight: 600; min-width: 170px; text-align: center; font-size: 14.5px; }
+.date-label {
+  font-weight: 600;
+  min-width: 0;
+  width: clamp(140px, 42vw, 170px);
+  text-align: center;
+  font-size: clamp(13px, 3.4vw, 14.5px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 /* ---------------------------------------------------------------- rings */
 
 .rings-row {
+  position: relative;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
+  gap: clamp(12px, 4vw, 18px);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
-  padding: 22px 18px;
+  padding: clamp(14px, 4vw, 22px) clamp(10px, 3vw, 18px);
+  overflow: hidden;
+}
+.rings-row::after {
+  content: '';
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 26px;
+  height: 26px;
+  background-color: currentColor;
+  color: var(--accent-deep);
+  opacity: 0.08;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Cg fill='%23000'%3E%3Crect x='3' y='1' width='2' height='1'/%3E%3Crect x='2' y='2' width='4' height='1'/%3E%3Crect x='1' y='3' width='6' height='2'/%3E%3Crect x='2' y='5' width='4' height='1'/%3E%3Crect x='3' y='6' width='2' height='1'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Cg fill='%23000'%3E%3Crect x='3' y='1' width='2' height='1'/%3E%3Crect x='2' y='2' width='4' height='1'/%3E%3Crect x='1' y='3' width='6' height='2'/%3E%3Crect x='2' y='5' width='4' height='1'/%3E%3Crect x='3' y='6' width='2' height='1'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+  pointer-events: none;
 }
 
-.macro-ring { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.macro-ring { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1 1 0; min-width: 64px; }
+.macro-ring svg { width: clamp(64px, 16vw, 100px); height: clamp(64px, 16vw, 100px); }
 .ring-track { fill: none; stroke: var(--surface-2); stroke-width: 8; }
 .ring-progress { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.5s var(--ease); }
 .ring-value { fill: var(--text); font-size: 19px; font-weight: 700; font-family: 'Geist', sans-serif; }
 .ring-goal { fill: var(--text-faint); font-size: 10px; }
-.ring-label { font-size: 12px; color: var(--text-dim); font-weight: 500; }
+.ring-label {
+  font-size: clamp(10.5px, 2.6vw, 12px);
+  color: var(--text-dim);
+  font-weight: 500;
+  white-space: nowrap;
+}
 
 /* ---------------------------------------------------------------- section headers */
 
@@ -285,9 +327,14 @@ button:disabled { opacity: 0.55; cursor: default; transform: none; }
   font-size: 13px;
   border: 1px dashed var(--border-strong);
   border-radius: var(--radius);
-  padding: 22px;
+  padding: 28px 22px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
+.empty .pixel-mark { opacity: 0.35; }
 
 /* ---------------------------------------------------------------- lists */
 
@@ -300,19 +347,51 @@ button:disabled { opacity: 0.55; cursor: default; transform: none; }
 .entry-row, .food-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 13px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 13px 16px;
-  transition: border-color 160ms var(--ease), box-shadow 160ms var(--ease);
+  transition: border-color 160ms var(--ease), box-shadow 160ms var(--ease), transform 160ms var(--ease);
+  animation: row-in 320ms var(--ease) backwards;
 }
-.entry-row:hover, .food-row:hover { border-color: var(--border-strong); box-shadow: var(--shadow-sm); }
+.entry-row:hover, .food-row:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
 
-.entry-name, .food-name { font-weight: 600; }
-.entry-meta, .food-meta { font-size: 12px; color: var(--text-dim); margin-top: 2px; text-transform: capitalize; }
-.entry-macros { display: flex; flex-direction: column; align-items: flex-end; font-size: 12px; color: var(--text-dim); gap: 2px; }
+.entry-info, .food-info { flex: 1; min-width: 0; }
+
+.row-avatar {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Geist Pixel Square', ui-monospace, monospace;
+  font-size: 11.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.entry-name, .food-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.entry-meta, .food-meta { font-size: 12px; color: var(--text-dim); margin-top: 2px; text-transform: capitalize; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.entry-macros { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; font-size: 12px; color: var(--text-dim); gap: 2px; }
+
+@keyframes row-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.entry-list li:nth-child(1), .food-list li:nth-child(1) { animation-delay: 0ms; }
+.entry-list li:nth-child(2), .food-list li:nth-child(2) { animation-delay: 30ms; }
+.entry-list li:nth-child(3), .food-list li:nth-child(3) { animation-delay: 60ms; }
+.entry-list li:nth-child(4), .food-list li:nth-child(4) { animation-delay: 90ms; }
+.entry-list li:nth-child(n+5), .food-list li:nth-child(n+5) { animation-delay: 120ms; }
 
 .icon-btn {
   background: transparent;
@@ -320,8 +399,11 @@ button:disabled { opacity: 0.55; cursor: default; transform: none; }
   color: var(--text-faint);
   cursor: pointer;
   padding: 6px;
+  min-width: 34px;
+  min-height: 34px;
   border-radius: var(--radius-sm);
   display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
 }
 .icon-btn:hover { color: var(--accent-deep); background: var(--surface-2); }
 
@@ -335,7 +417,7 @@ button:disabled { opacity: 0.55; cursor: default; transform: none; }
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
-  padding: 18px;
+  padding: clamp(14px, 4vw, 18px);
   align-items: center;
 }
 
@@ -370,8 +452,15 @@ button[type='submit'], .add-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.05);
+  transition: transform 140ms var(--ease), opacity 160ms var(--ease), box-shadow 160ms var(--ease);
 }
-button[type='submit']:hover, .add-btn:hover { opacity: 0.92; }
+button[type='submit']:hover, .add-btn:hover {
+  opacity: 0.94;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px -4px rgba(0, 122, 204, 0.45);
+}
+button[type='submit']:active, .add-btn:active { transform: scale(0.97); box-shadow: none; }
 
 .food-actions { display: flex; align-items: center; gap: 8px; }
 .qty-input { width: 58px; }
@@ -389,8 +478,10 @@ button[type='submit']:hover, .add-btn:hover { opacity: 0.92; }
   box-shadow: var(--shadow-sm);
   padding: 14px;
 }
+.chart-area { fill: var(--accent); opacity: 0.07; }
 .chart-line { stroke: var(--accent); stroke-width: 2; fill: none; }
 .chart-dot { fill: var(--accent); }
+.chart-dot-latest { fill: var(--surface); stroke: var(--accent); stroke-width: 2.5; }
 
 /* ---------------------------------------------------------------- hint / errors */
 
@@ -441,7 +532,7 @@ button[type='submit']:hover, .add-btn:hover { opacity: 0.92; }
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
-  padding: 20px;
+  padding: clamp(14px, 4vw, 20px);
 }
 .profile-form label {
   display: flex; flex-direction: column; gap: 4px;
@@ -454,7 +545,7 @@ button[type='submit']:hover, .add-btn:hover { opacity: 0.92; }
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
-  padding: 20px;
+  padding: clamp(14px, 4vw, 20px);
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -467,11 +558,65 @@ button[type='submit']:hover, .add-btn:hover { opacity: 0.92; }
 .goal-stat {
   background: var(--surface-2);
   border-radius: var(--radius-sm);
-  padding: 13px;
+  padding: clamp(10px, 3vw, 13px);
   text-align: center;
 }
 .goal-stat-value { font-size: 16px; font-weight: 700; }
 .goal-stat-label { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+.locked-field { display: flex; flex-direction: column; gap: 4px; }
+.locked-field-label { font-size: 11.5px; color: var(--text-dim); text-transform: capitalize; }
+.locked-field-value {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 11px;
+  font-size: 13.5px;
+  color: var(--text-dim);
+}
+
+/* ---------------------------------------------------------------- water */
+
+.water-summary {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: clamp(14px, 4vw, 20px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.water-summary-head { display: flex; align-items: center; gap: 12px; color: var(--accent); }
+.water-total { font-size: 22px; font-weight: 700; color: var(--text); }
+.water-total span { font-size: 13px; font-weight: 500; color: var(--text-faint); }
+.water-hint { margin: 0; }
+.water-track { height: 10px; }
+.water-track .micro-bar-fill { background: var(--accent); }
+
+.water-quick-add { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.water-custom-form { display: flex; gap: 8px; }
+.water-custom-form input { width: 110px; }
+
+/* ---------------------------------------------------------------- weekly tracker */
+
+.weekly-tracker { display: flex; flex-direction: column; gap: 10px; }
+.weekly-tracker-row { display: flex; justify-content: space-between; gap: 6px; }
+.weekly-day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.weekly-day-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--border-strong);
+  color: var(--text-faint);
+}
+.weekly-day-dot.hit { background: var(--good); border-style: solid; border-color: var(--good); color: var(--accent-ink); }
+.weekly-day-dot.miss { background: var(--accent-deep); border-style: solid; border-color: var(--accent-deep); color: var(--accent-ink); }
+.weekly-day.is-today .weekly-day-dot { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent); }
+.weekly-day-label { font-size: 11px; color: var(--text-dim); }
 
 /* ---------------------------------------------------------------- settings */
 
@@ -480,7 +625,7 @@ button[type='submit']:hover, .add-btn:hover { opacity: 0.92; }
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
-  padding: 20px;
+  padding: clamp(14px, 4vw, 20px);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -492,15 +637,17 @@ button[type='submit']:hover, .add-btn:hover { opacity: 0.92; }
 /* ---------------------------------------------------------------- auth */
 
 .auth-screen {
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--bg);
   position: relative;
+  padding: 24px 16px;
 }
 .auth-card {
-  width: 340px;
+  width: min(340px, 100%);
   display: flex;
   flex-direction: column;
   gap: 13px;
@@ -508,7 +655,12 @@ button[type='submit']:hover, .add-btn:hover { opacity: 0.92; }
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
-  padding: 32px;
+  padding: clamp(22px, 6vw, 32px);
+  animation: auth-in 420ms var(--ease) backwards;
+}
+@keyframes auth-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .auth-brand {
   display: flex;
@@ -522,20 +674,107 @@ button[type='submit']:hover, .add-btn:hover { opacity: 0.92; }
 .auth-card .link-btn { align-self: center; }
 .auth-theme-toggle {
   position: absolute;
-  top: 24px;
-  right: 24px;
+  top: clamp(12px, 4vw, 24px);
+  right: clamp(12px, 4vw, 24px);
 }
+
+/* ---------------------------------------------------------------- onboarding */
+
+.onboarding-screen { align-items: flex-start; padding-top: clamp(24px, 8vh, 64px); padding-bottom: clamp(24px, 8vh, 64px); }
+.onboarding-card { width: min(600px, 100%); gap: 18px; }
+.onboarding-form { grid-template-columns: repeat(2, 1fr); }
+.onboarding-preview .goal-grid { grid-template-columns: repeat(3, 1fr); }
 
 /* ---------------------------------------------------------------- responsive */
 
+/*
+ * Sidebar collapses to icon-only once there isn't room for labels — this
+ * threshold is a real layout fork (not a value that can be made fluid),
+ * so it stays a discrete breakpoint. Everything below it (spacing, type,
+ * touch targets, ring size) scales continuously via clamp() instead of
+ * jumping again at 480px, so the layout holds up at any phone width.
+ */
 @media (max-width: 720px) {
   .sidebar { width: 68px; padding: 16px 10px; }
   .sidebar-brand span:not(.pixel-mark) { display: none; }
   .nav-item span { display: none; }
-  .nav-item { justify-content: center; }
+  .nav-item { justify-content: center; min-height: 44px; }
   .nav-email { display: none; }
-  .main { padding: 24px 18px 56px; }
   .profile-form, .goal-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .sidebar { width: 56px; padding: 12px 6px; }
+  .sidebar-nav { gap: 6px; }
+  .sidebar-brand { padding: 4px 4px 14px; justify-content: center; }
+  .nav-item { padding: 11px 6px; }
+  .theme-toggle span { display: none; }
+  .theme-toggle { justify-content: center; padding: 9px; min-height: 40px; }
+
+  /* two-per-row grid instead of a flex line, so 4 rings always land in
+     even pairs (never an awkward 3+1) and get to use the freed-up width */
+  .rings-row { display: grid; grid-template-columns: repeat(2, 1fr); justify-items: center; }
+  .macro-ring { flex: none; width: 100%; }
+  .macro-ring svg { width: clamp(72px, 24vw, 120px); height: clamp(72px, 24vw, 120px); }
+
+  .goals-form, .food-form, .weight-form, .workout-form, .settings-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .goals-form input, .food-form input, .workout-form input,
+  .weight-form input, .settings-form input, .qty-input,
+  .goals-form select, .food-form select, .workout-form select {
+    width: 100%;
+  }
+  .goals-form button[type='submit'], .food-form button[type='submit'],
+  .weight-form button[type='submit'], .workout-form button[type='submit'],
+  .settings-form button[type='submit'] {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* entry cards become a clean two-line layout: avatar+name+delete on top,
+     macros as a full-width second line indented to align under the name
+     (offset = avatar width 34px + row gap 13px), instead of an unpredictable wrap */
+  .food-row, .entry-row { flex-wrap: wrap; row-gap: 8px; }
+  .entry-macros {
+    flex: 1 1 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 47px;
+  }
+  .food-actions { width: 100%; justify-content: flex-end; flex-wrap: wrap; }
+
+  /* larger, easier touch targets once density-friendly hover states don't matter */
+  .date-nav button { width: 40px; height: 40px; }
+  .icon-btn { min-width: 38px; min-height: 38px; }
+
+  .profile-form, .goal-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .micro-grid { grid-template-columns: 1fr; }
+
+  .onboarding-form { grid-template-columns: 1fr; }
+  .onboarding-preview .goal-grid { grid-template-columns: repeat(2, 1fr); }
+  .water-custom-form { flex: 1 1 100%; }
+  .water-custom-form input { width: auto; flex: 1; }
+  .weekly-day-dot { width: 24px; height: 24px; }
+  .weekly-day-label { font-size: 10px; }
+}
+
+/* Smallest phones (iPhone SE / older Android, ~320-360px) */
+@media (max-width: 360px) {
+  .row-avatar { width: 28px; height: 28px; font-size: 10.5px; }
+  .entry-macros { font-size: 11px; padding-left: 41px; }
+  .weight-current { font-size: 19px; }
+  .goal-stat-value { font-size: 14px; }
+  .profile-form { grid-template-columns: 1fr; }
+}
+
+/* Short/landscape phones: the fixed app height needs to actually shrink content, not just clip it */
+@media (max-height: 480px) and (orientation: landscape) {
+  .rings-row { padding: 10px 14px; }
+  .macro-ring svg { width: 56px; height: 56px; }
+  .auth-card { padding: 20px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

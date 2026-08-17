@@ -63,3 +63,19 @@ export function Flame(props) {
     </svg>
   )
 }
+
+export function Droplet(props) {
+  return (
+    <svg {...base} width={props.size ?? 17} height={props.size ?? 17} aria-hidden="true">
+      <path d="M12 3c3.5 4.2 6 7.6 6 10.8a6 6 0 1 1-12 0C6 10.6 8.5 7.2 12 3z" />
+    </svg>
+  )
+}
+
+export function Check(props) {
+  return (
+    <svg {...base} width={props.size ?? 14} height={props.size ?? 14} aria-hidden="true">
+      <path d="M5 13l4 4L19 7" />
+    </svg>
+  )
+}
