@@ -10,14 +10,25 @@ export function shiftDate(iso, days) {
   return d.toISOString().slice(0, 10)
 }
 
+function pad2(n) {
+  return String(n).padStart(2, '0')
+}
+
+// dd/mm/yyyy — Indian date format, used everywhere instead of locale-dependent formatting.
+export function formatDDMMYYYY(iso) {
+  const d = new Date(iso + 'T00:00:00')
+  return `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()}`
+}
+
 export function formatNice(iso) {
   const d = new Date(iso + 'T00:00:00')
-  return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })
+  const weekday = d.toLocaleDateString(undefined, { weekday: 'short' })
+  return `${weekday}, ${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()}`
 }
 
 export function formatShort(iso) {
   const d = new Date(iso + 'T00:00:00')
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+  return `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}`
 }
 
 export function calculateAge(dobISO) {
@@ -32,8 +43,7 @@ export function calculateAge(dobISO) {
 }
 
 export function formatBirthday(dobISO) {
-  const d = new Date(dobISO + 'T00:00:00')
-  return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+  return formatDDMMYYYY(dobISO)
 }
 
 // Last N calendar dates ending today, oldest first — used by the weekly goal tracker.

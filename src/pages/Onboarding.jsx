@@ -17,6 +17,7 @@ const empty = {
 export default function Onboarding({ onComplete }) {
   const [profile, setProfile] = useState(empty)
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
 
   const age = calculateAge(profile.date_of_birth)
   const numericProfile = {
@@ -34,9 +35,15 @@ export default function Onboarding({ onComplete }) {
   async function start() {
     if (!goals) return
     setSaving(true)
-    await api.settings.set('profile', JSON.stringify(profile))
-    await api.settings.set('goals', JSON.stringify(goals))
-    onComplete(goals)
+    setError('')
+    try {
+      await api.settings.set('profile', JSON.stringify(profile))
+      await api.settings.set('goals', JSON.stringify(goals))
+      onComplete(goals)
+    } catch (err) {
+      setError(err?.message || 'Failed to save your profile. Please try again.')
+      setSaving(false)
+    }
   }
 
   return (
@@ -101,6 +108,8 @@ export default function Onboarding({ onComplete }) {
             </div>
           </div>
         )}
+
+        {error && <p className="hint error-hint">{error}</p>}
 
         <button className="add-btn" disabled={!ready || saving} onClick={start}>
           {saving ? 'Setting up…' : 'Start tracking'}

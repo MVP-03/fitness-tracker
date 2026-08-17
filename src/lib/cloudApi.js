@@ -2,10 +2,25 @@ import { supabase } from './supabaseClient.js'
 
 const MICRO_KEYS = ['fiber', 'sugar', 'sodium', 'potassium', 'calcium', 'iron', 'vitamin_c']
 
+// Guards against calls that never resolve or reject (e.g. a stuck auth/network
+// call) so the UI always surfaces an error instead of spinning forever.
+function withTimeout(promise, ms, label) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(
+      () => reject(new Error(`${label} timed out. Check your internet connection and try again.`)),
+      ms,
+    )),
+  ])
+}
+
+// getSession() reads from local storage (no network round-trip), unlike getUser()
+// which revalidates against the Auth server every call. RLS still enforces
+// user_id ownership on the actual data query, so this is safe for perf.
 async function uid() {
-  const { data, error } = await supabase.auth.getUser()
-  if (error || !data.user) throw new Error('Not signed in')
-  return data.user.id
+  const { data, error } = await withTimeout(supabase.auth.getSession(), 8000, 'Checking your session')
+  if (error || !data.session) throw new Error('Not signed in')
+  return data.session.user.id
 }
 
 function check(result) {
@@ -140,12 +155,18 @@ export const cloudApi = {
     async set(key, value) {
       const user_id = await uid()
       if (key === 'goals') {
-        check(await supabase.from('profiles').upsert({ user_id, goals: JSON.parse(value) }, { onConflict: 'user_id' }))
+        check(await withTimeout(
+          supabase.from('profiles').upsert({ user_id, goals: JSON.parse(value) }, { onConflict: 'user_id' }),
+          8000, 'Saving your goals',
+        ))
         return
       }
       if (key === 'profile') {
         const p = JSON.parse(value)
-        check(await supabase.from('profiles').upsert({ user_id, ...p, onboarded: true }, { onConflict: 'user_id' }))
+        check(await withTimeout(
+          supabase.from('profiles').upsert({ user_id, ...p, onboarded: true }, { onConflict: 'user_id' }),
+          8000, 'Saving your profile',
+        ))
         return
       }
     },
