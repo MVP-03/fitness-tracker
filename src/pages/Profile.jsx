@@ -45,7 +45,8 @@ export default function Profile({ onGoalsApplied }) {
       'Apply these goals? This replaces your current daily calorie and macro targets on the Today dashboard.'
     )
     if (!confirmed) return
-    await api.settings.set('profile', JSON.stringify(profile))
+    const { age: _age, ...profileToSave } = numericProfile
+    await api.settings.set('profile', JSON.stringify(profileToSave))
     await api.settings.set('goals', JSON.stringify(goals))
     setLocked(true)
     setApplied(true)

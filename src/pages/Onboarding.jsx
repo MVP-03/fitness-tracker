@@ -38,7 +38,8 @@ export default function Onboarding({ onComplete }) {
     setSaving(true)
     setError('')
     try {
-      await api.settings.set('profile', JSON.stringify(profile))
+      const { age: _age, ...profileToSave } = numericProfile
+      await api.settings.set('profile', JSON.stringify({ ...profileToSave, name: profile.name.trim() }))
       await api.settings.set('goals', JSON.stringify(goals))
       onComplete(goals, profile.name.trim())
     } catch (err) {
